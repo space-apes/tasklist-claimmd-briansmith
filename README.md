@@ -1,5 +1,5 @@
 ## to run this locally(copied these files directly from coderpad)
-- npm install (using same package.json as coderpad)
+- npm install 
 - npm start 
 - navigate to localhost:3000
 
