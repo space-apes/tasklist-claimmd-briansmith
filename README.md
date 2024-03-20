@@ -1,3 +1,8 @@
+## to run this locally(copied these files directly from coderpad)
+- npm install (using same package.json as coderpad)
+- npm start 
+- navigate to localhost:3000
+
 ## React Todo List
 
 The goal of this exercise is to create a working todo list with persistent data storage.
