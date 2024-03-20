@@ -5,6 +5,7 @@ import { AddInput } from "./components/AddInput";
 import { TodoItem } from "./components/TodoItem";
 import { TodoList } from "./components/TodoList";
 import { Header } from "./components/Header";
+import { userInfo } from "os";
 
 const Wrapper = styled.div({
   display: "flex",
@@ -38,10 +39,47 @@ const initialData: Todo[] = [
   },
 ];
 
+const setLocalStorageWithTodoArray = (todos: Todo[]): void => {
+  try {
+  localStorage.setItem("todoArray", JSON.stringify(todos));
+  }catch(error){
+    //in lieu of actual error handling just console.log
+    console.log(error);
+    throw(error);
+  }
+}
+
+const getTodoArrayFromLocalStorage = (): Todo[] => {
+  try {
+    if (!localStorage.getItem('todoArray')){
+      return [];
+    }
+    return JSON.parse(localStorage.getItem("todoArray") || '') as Todo[];
+  }catch(error){
+    //in lieu of actual error handling just console.log
+    console.log(error);
+    throw(error);
+  }
+}
+
 function App() {
+  const [todos, setTodos] = useState<Todo[]>([]);
 
-  const [todos, setTodos] = useState<Todo[]>(initialData);
+  //populate local storage if it is empty 
+  //and only set todo state from local storage on first render
+  useEffect(()=>{
+    //if local storage is empty, populate with initialData
+    if (getTodoArrayFromLocalStorage().length == 0){
+      setLocalStorageWithTodoArray(initialData);
+    }
+    setTodos(getTodoArrayFromLocalStorage());
+  }, []);
 
+  //update local storage any time todos is changed
+  useEffect(()=>{
+    setLocalStorageWithTodoArray(todos);
+  }, [todos]);
+  
   const addTodo = useCallback((label: string) => {
     setTodos((prev) => [
       {
@@ -53,30 +91,49 @@ function App() {
     ]);
   }, []);
 
-  const handleChange = useCallback((checked: boolean, userId:string) => {
-    // handle the check/uncheck logic
-    //TODO: i want to get some identifier for the specific todo to update
+  const handleDelete = useCallback((id: string) =>{
+    setTodos((prevTodos)=>{
+      const indexOfTodo = prevTodos.findIndex(todo => todo.id == id);
+      const copyOfPrevTodos = prevTodos.slice();
+      copyOfPrevTodos.splice(indexOfTodo, 1);
+      return copyOfPrevTodos; 
+    });
+  }, [])
 
-    const newTodos:Todo[] = todos.map((curTodo)=>{
-      if(curTodo.id == userId){
-        return {...curTodo, checked: checked}
+
+
+  //Ok, I understand why we used useCallback here. It is to preserve reference equality.
+  //because the function reference is 'changed' ever time it is defined again 
+  //per App component render. 
+  const handleChange = useCallback((checked: boolean, id:string) => {
+
+    setTodos((prevTodos) =>{
+      const indexOfTodo = prevTodos.findIndex(todo => todo.id == id);
+      
+      //copy array to avoid mutating state directly 
+      let copyOfPrevTodos = prevTodos.slice();
+      copyOfPrevTodos[indexOfTodo]['checked'] = checked;
+      
+      //move to end of array if checked
+      if (checked){
+        let tempTodo:Todo = copyOfPrevTodos[indexOfTodo];
+        copyOfPrevTodos.splice(indexOfTodo, 1);
+        copyOfPrevTodos.push(tempTodo);
       }
-      else{
-        return {...curTodo}
-      }
+      return copyOfPrevTodos;
+
     });
 
-    setTodos(newTodos);
-
-
   }, []);
+
 
   return (
     <Wrapper>
       <Header>Todo List</Header>
       <AddInput onAdd={addTodo} />
       <TodoList>
-        {todos.map((todo, index) => (
+        {todos.map((todo) => (
+          
           <TodoItem {...todo} key={todo.id} onChange={handleChange} />
         ))}
       </TodoList>
