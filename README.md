@@ -3,6 +3,9 @@
 - npm start 
 - navigate to localhost:3000
 
+## notes
+- i did not complete the final stretch goal of adding date fields because it is getting near the end of the day but if I did, I would have maintained two separate todo state arrays and then mapped through them sequentially when rendering App.I felt like that would be easier than trying to keep track of which index of todos was the cutoff. 
+
 ## React Todo List
 
 The goal of this exercise is to create a working todo list with persistent data storage.

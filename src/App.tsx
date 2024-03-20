@@ -5,7 +5,7 @@ import { AddInput } from "./components/AddInput";
 import { TodoItem } from "./components/TodoItem";
 import { TodoList } from "./components/TodoList";
 import { Header } from "./components/Header";
-import { userInfo } from "os";
+import { ResetButton } from "./components/ResetButton";
 
 const Wrapper = styled.div({
   display: "flex",
@@ -26,6 +26,7 @@ const initialData: Todo[] = [
     id: uuid(),
     label: "Buy groceries",
     checked: false,
+
   },
   {
     id: uuid(),
@@ -61,6 +62,7 @@ const getTodoArrayFromLocalStorage = (): Todo[] => {
     throw(error);
   }
 }
+
 
 function App() {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -107,8 +109,7 @@ function App() {
   const handleChange = useCallback((checked: boolean, index: number) => {
 
     setTodos((prevTodos) =>{
-
-      console.log(`handleChange index is ${index}`);
+      
       //copy array to avoid mutating state directly 
       let copyOfPrevTodos = prevTodos.slice();
       copyOfPrevTodos[index]['checked'] = checked;
@@ -130,6 +131,7 @@ function App() {
   return (
     <Wrapper>
       <Header>Todo List</Header>
+      <ResetButton></ResetButton>
       <AddInput onAdd={addTodo} />
       <TodoList>
         {todos.map((todo, i) => (

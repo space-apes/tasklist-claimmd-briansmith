@@ -7,10 +7,10 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 3000,
 
-    /*hmr: {
+    hmr: {
       clientPort: parseInt(process.env.WEBSOCKET_PORT!),
     },
-    */ 
+     
   },
   plugins: [react()],
   customLogger: createLogger('info', { prefix: '[coderpad]' }),
