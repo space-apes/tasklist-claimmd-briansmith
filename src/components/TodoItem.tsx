@@ -2,17 +2,25 @@ import React, { FC, useState} from "react";
 import styled from "@emotion/styled";
 
 const ToDoContainer = styled.div({
-  display:"flex"
+  display:"flex",
+  position: "relative"
 });
 
 const DeleteButton = styled.button({
-  backgroundColor: "red",
-  width: "10%"
+  position: "absolute",
+  top: "5px", 
+  right: "5px", 
+  backgroundColor: "#ff5858",
+  color: "white", 
+  border: "none",
+  padding: "8px 12px",
+  cursor: "pointer",
+  transition: "background-color 0.3s ease"
 });
 
 
 export const Wrapper = styled.label({
-  display: "flex",
+  display: "absolute",
   alignItems: "center",
   width: "100%",
   borderRadius: 4,
@@ -45,6 +53,7 @@ export interface TodoItemProps {
   id: string;
   label: string;
   checked?: boolean;
+  index: number;
   onChange?: (checked: boolean, id:string) => void;
   onDelete?: (id: string) => void; 
 }
@@ -54,6 +63,7 @@ export const TodoItem: FC<TodoItemProps> = ({
   id,
   label,
   checked = false,
+  index,
   onChange,
   onDelete
 }) => {
@@ -71,7 +81,7 @@ export const TodoItem: FC<TodoItemProps> = ({
           type="checkbox"
           id={id}
           checked={checked}
-          onChange={(e) => onChange(e.target.checked, id)}
+          onChange={(e) => onChange(e.target.checked, index)}
         />
         <Label checked={checked}>{label}</Label>
       </Wrapper>

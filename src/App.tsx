@@ -91,31 +91,32 @@ function App() {
     ]);
   }, []);
 
-  const handleDelete = useCallback((id: string) =>{
-    //console.log(`handleDelete: id is ${id}`);
+  const handleDelete = useCallback((index: number) =>{
     
     setTodos((prevTodos)=>{
-      const indexOfTodo = prevTodos.findIndex(todo => todo.id == id);
+
+      //copy arrayto avoid mutating state directly 
       const copyOfPrevTodos = prevTodos.slice();
-      copyOfPrevTodos.splice(indexOfTodo, 1);
+      copyOfPrevTodos.splice(index, 1);
       return copyOfPrevTodos; 
     });
     
   }, []);
 
-  const handleChange = useCallback((checked: boolean, id:string) => {
+
+  const handleChange = useCallback((checked: boolean, index: number) => {
 
     setTodos((prevTodos) =>{
-      const indexOfTodo = prevTodos.findIndex(todo => todo.id == id);
-      
+
+      console.log(`handleChange index is ${index}`);
       //copy array to avoid mutating state directly 
       let copyOfPrevTodos = prevTodos.slice();
-      copyOfPrevTodos[indexOfTodo]['checked'] = checked;
+      copyOfPrevTodos[index]['checked'] = checked;
       
       //move to end of array if checked
       if (checked){
-        let tempTodo:Todo = copyOfPrevTodos[indexOfTodo];
-        copyOfPrevTodos.splice(indexOfTodo, 1);
+        let tempTodo:Todo = copyOfPrevTodos[index];
+        copyOfPrevTodos.splice(index, 1);
         copyOfPrevTodos.push(tempTodo);
       }
       return copyOfPrevTodos;
@@ -125,14 +126,15 @@ function App() {
   }, []);
 
 
+
   return (
     <Wrapper>
       <Header>Todo List</Header>
       <AddInput onAdd={addTodo} />
       <TodoList>
-        {todos.map((todo) => (
+        {todos.map((todo, i) => (
           
-          <TodoItem {...todo} key={todo.id} onChange={handleChange} onDelete={handleDelete}/>
+          <TodoItem {...todo} key={todo.id} index = {i} onChange={handleChange} onDelete={handleDelete}/>
         ))}
       </TodoList>
     </Wrapper>
