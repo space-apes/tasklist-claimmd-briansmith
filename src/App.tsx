@@ -92,19 +92,17 @@ function App() {
   }, []);
 
   const handleDelete = useCallback((id: string) =>{
+    //console.log(`handleDelete: id is ${id}`);
+    
     setTodos((prevTodos)=>{
       const indexOfTodo = prevTodos.findIndex(todo => todo.id == id);
       const copyOfPrevTodos = prevTodos.slice();
       copyOfPrevTodos.splice(indexOfTodo, 1);
       return copyOfPrevTodos; 
     });
-  }, [])
+    
+  }, []);
 
-
-
-  //Ok, I understand why we used useCallback here. It is to preserve reference equality.
-  //because the function reference is 'changed' ever time it is defined again 
-  //per App component render. 
   const handleChange = useCallback((checked: boolean, id:string) => {
 
     setTodos((prevTodos) =>{
@@ -134,7 +132,7 @@ function App() {
       <TodoList>
         {todos.map((todo) => (
           
-          <TodoItem {...todo} key={todo.id} onChange={handleChange} />
+          <TodoItem {...todo} key={todo.id} onChange={handleChange} onDelete={handleDelete}/>
         ))}
       </TodoList>
     </Wrapper>

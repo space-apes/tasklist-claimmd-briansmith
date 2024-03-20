@@ -1,5 +1,15 @@
-import React, { FC } from "react";
+import React, { FC, useState} from "react";
 import styled from "@emotion/styled";
+
+const ToDoContainer = styled.div({
+  display:"flex"
+});
+
+const DeleteButton = styled.button({
+  backgroundColor: "red",
+  width: "10%"
+});
+
 
 export const Wrapper = styled.label({
   display: "flex",
@@ -36,25 +46,37 @@ export interface TodoItemProps {
   label: string;
   checked?: boolean;
   onChange?: (checked: boolean, id:string) => void;
+  onDelete?: (id: string) => void; 
 }
+
 
 export const TodoItem: FC<TodoItemProps> = ({
   id,
   label,
   checked = false,
-  onChange
+  onChange,
+  onDelete
 }) => {
+  const [showDeleteButton, setShowDeleteButton] = useState(false);
 
   
   return (
-    <Wrapper>
-      <Checkbox
-        type="checkbox"
-        id={id}
-        checked={checked}
-        onChange={(e) => onChange(e.target.checked, id)}
-      />
-      <Label checked={checked}>{label}</Label>
-    </Wrapper>
+
+    <ToDoContainer
+        onMouseEnter={()=>setShowDeleteButton(true)}
+        onMouseLeave={()=>setShowDeleteButton(false)}
+    >
+      <Wrapper>
+        <Checkbox
+          type="checkbox"
+          id={id}
+          checked={checked}
+          onChange={(e) => onChange(e.target.checked, id)}
+        />
+        <Label checked={checked}>{label}</Label>
+      </Wrapper>
+      {showDeleteButton && 
+        <DeleteButton onClick={()=> onDelete(id)}>x</DeleteButton>}
+    </ToDoContainer>
   );
 };
