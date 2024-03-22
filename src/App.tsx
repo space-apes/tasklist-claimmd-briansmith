@@ -26,17 +26,22 @@ const initialData: Todo[] = [
     id: uuid(),
     label: "Buy groceries",
     checked: false,
-
+    created_at: new Date().toISOString(),
+    completed_at: ''
   },
   {
     id: uuid(),
     label: "Reboot computer",
     checked: false,
+    created_at: new Date().toISOString(),
+    completed_at: ''
   },
   {
     id: uuid(),
     label: "Ace CoderPad interview",
     checked: true,
+    created_at: new Date().toISOString(),
+    completed_at: new Date().toISOString()
   },
 ];
 
@@ -64,6 +69,48 @@ const getTodoArrayFromLocalStorage = (): Todo[] => {
 }
 
 
+
+/*
+  attempt to create callback for sort function for all cases 
+
+  active todos should be sorted before completed todos
+
+  within active todos, higher created_at values should be at top
+
+  within completed todos, lower completed_at values should be at top
+*/
+
+const todoSortCallback = (a: Todo, b: Todo): number =>{
+
+
+  //active todos should always be before completed todos
+  if (!a.completed_at && b.completed_at){
+    return -1;
+  }
+  else if (a.completed_at && !b.completed_at){
+    return 1
+  }
+  //active todos should have created_at with higher values move to the beginning
+  else if (!a.completed_at && !b.completed_at){
+    if (a.created_at >= b.created_at){
+      return -1
+    }
+    else{
+      return 1;
+    }
+  }
+  //completed todos should have completed_at with lower values move to the beginning
+  else {
+    if (a.completed_at <= b.completed_at){
+      return -1
+    }
+    else{
+      return 1;
+    }
+  }
+}
+
+
 function App() {
   const [todos, setTodos] = useState<Todo[]>([]);
 
@@ -81,16 +128,34 @@ function App() {
   useEffect(()=>{
     setLocalStorageWithTodoArray(todos);
   }, [todos]);
-  
+ 
+  /*
+    when adding a new active Todo, ensure it is appended to bottom
+    of active Todos (sorted by created_at ascending)
+
+  */
   const addTodo = useCallback((label: string) => {
-    setTodos((prev) => [
-      {
+    const newActiveTodo = {
         id: uuid(),
         label,
         checked: false,
-      },
-      ...prev,
-    ]);
+        created_at: new Date().toISOString(),
+        completed_at: ''
+
+    } as Todo;
+    
+    setTodos((prevTodos) => {
+      //copy prev to avoid mutating state directly
+      let prevTodosCopy: Todo[] = prevTodos.slice();
+
+      prevTodosCopy.push(newActiveTodo);
+
+      prevTodosCopy.sort(todoSortCallback);
+
+      //sortTodoIntoActiveTodosById(newActiveTodo.id);
+
+      return prevTodosCopy;
+    });
   }, []);
 
   const handleDelete = useCallback((index: number) =>{
@@ -106,20 +171,27 @@ function App() {
   }, []);
 
 
-  const handleChange = useCallback((checked: boolean, index: number) => {
+  const handleChange = useCallback((checked: boolean, id: string) => {
 
     setTodos((prevTodos) =>{
-      
+
       //copy array to avoid mutating state directly 
       let copyOfPrevTodos = prevTodos.slice();
-      copyOfPrevTodos[index]['checked'] = checked;
-      
-      //move to end of array if checked
+     
+      //find index of todo to alter then set it's 'checked'
+      const indexOfChangedTodo = copyOfPrevTodos.findIndex((todo)=>todo.id == id)
+      copyOfPrevTodos[indexOfChangedTodo]['checked'] = checked;
+
+      //if setting it as completed, add completed_at value, otherwise set completed_at to empty string
       if (checked){
-        let tempTodo:Todo = copyOfPrevTodos[index];
-        copyOfPrevTodos.splice(index, 1);
-        copyOfPrevTodos.push(tempTodo);
+        copyOfPrevTodos[indexOfChangedTodo].completed_at = new Date().toISOString();
       }
+      else{
+        copyOfPrevTodos[indexOfChangedTodo].completed_at = '';
+      }
+
+      copyOfPrevTodos.sort(todoSortCallback);
+
       return copyOfPrevTodos;
 
     });

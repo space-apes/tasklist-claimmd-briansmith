@@ -3,8 +3,13 @@
 - npm start 
 - navigate to localhost:3000
 
-## notes
-- i did not complete the final stretch goal of adding date fields because it is getting near the end of the day but if I did, I would have maintained two separate todo state arrays and then mapped through them sequentially when rendering App.I felt like that would be easier than trying to keep track of which index of todos was the cutoff. 
+## notes 
+- for final flex challenge i made some assumptions: 
+  - todos can be set or unset to completed freely 
+  - the todo list should be populated by initialData if empty
+- i also made a design decision to use a single todo array for both completed and non-completed todos to be sorted. 
+
+- still needs a fix: sometimes values that are going from active to completed are sorted to correct position but do not have strikethrough. 
 
 ## React Todo List
 
